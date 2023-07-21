@@ -7,8 +7,6 @@ const fsPromises = require("fs").promises;
 const todoDBName = "tododb";
 const useCloudant = false;
 
-
-
 //Init code for Cloudant
 
 //Initialize backend
@@ -61,16 +59,15 @@ async function addItem (request, response) {
 app.get("/get/items", getItems)
 async function getItems (request, response) {
     //begin here
+    var data = await fsPromises.readFile("database.json");
+    response.json(JSON.parse(data));
+}
 
-};
-
-//** week 6, search items service */
-app.get("/get/searchitem", searchItems) 
-async function searchItems (request, response) {
-    //begin here
-
-};
-
-
-// Add initDB function here
-
+// GET listener to return todo lists that match the name sent as a parameter to this request
+app.get("/get/searchitem", async (req, res) => {
+  // Begin here
+  var searchField = req.query.taskname;
+  var json = JSON.parse(await fsPromises.readFile("database.json"));
+  var returnData = json.filter(jsondata => jsondata.Task === searchField);
+  res.json(returnData);
+});
